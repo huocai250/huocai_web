@@ -1,0 +1,5 @@
+const escapeHtml=value=>(value||'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+function markdown(text){return escapeHtml(text).replace(/```([\\s\\S]*?)```/g,'<pre><code>$1</code></pre>').replace(/^## (.*)$/gm,'<h2>$1</h2>').replace(/^# (.*)$/gm,'<h2>$1</h2>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n\n/g,'</p><p>').replace(/^(?!<h2|<pre)(.+)$/gm,'$1');}
+const slug=new URLSearchParams(location.search).get('slug');
+fetch('posts.json').then(r=>r.json()).then(posts=>{const post=posts.find(item=>item.slug===slug);if(!post)throw new Error('文章不存在');document.title=`${post.title} / 火柴 TECH LOG`;document.querySelector('#meta').textContent=`${post.date} · ${post.tag||'TECH'}`;document.querySelector('#title').textContent=post.title;document.querySelector('#body').innerHTML=`<p>${markdown(post.content)}</p>`;}).catch(()=>{document.querySelector('#title').textContent='找不到这篇文章';document.querySelector('#body').innerHTML='<p>它可能尚未发布，或链接已失效。</p>';});
+
